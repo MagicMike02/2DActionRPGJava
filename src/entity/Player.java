@@ -14,6 +14,8 @@ public class Player extends Entity{
     public final int screenX;
     public final int screenY;
 
+    int hasKey = 0;
+
     public Player(GamePanel gp, KeyHandler key){
         this.gp = gp;
         this.keyH = key;
@@ -25,6 +27,8 @@ public class Player extends Entity{
         solidArea = new Rectangle();
         solidArea.x = 8;
         solidArea.y = 16;
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY  = solidArea.y;
         solidArea.width = 30;
         solidArea.height = 30;
 
@@ -36,7 +40,8 @@ public class Player extends Entity{
     public void setDefaultValues(){
         this.worldX = gp.tileSize * 23;
         this.worldY = gp.tileSize * 21;
-        this.speed = 4;
+        //this.speed = 4;
+        this.speed = 8; //TODO: CANCELLARE -> Solo per testare il game
         direction = "down";
     }
 
@@ -77,6 +82,11 @@ public class Player extends Entity{
             collisionOn = false;
             gp.cChecker.checkTile(this);
 
+            //Check Object Collision
+            int objIndex = gp.cChecker.checkObject(this, true);
+            pickUpObject(objIndex);
+
+
             //if collision is False, player can move
             if(!collisionOn){
                 switch(direction){
@@ -87,17 +97,40 @@ public class Player extends Entity{
                 }
             }
 
-
             spriteCounter++;
-            if( spriteCounter > 18){
+
+            if(spriteCounter > 18){
                 if(spriteNum == 1) spriteNum = 2;
                 else spriteNum = 1;
                 spriteCounter = 0;
             }
         }
     }
-    public void draw(Graphics2D g2){
 
+    public void pickUpObject(int i){
+        if(i != 999){
+            String objectName = gp.obj[i].name;
+            switch(objectName){
+                case "Key" -> {
+                    hasKey++;
+                    gp.obj[i] = null; // delete the Key touched
+                    System.out.println("Key: " + hasKey);
+                }
+                case "Door" -> {
+                    if(hasKey > 0){
+                        gp.obj[i] = null; // delete the Key touched
+                        hasKey--;
+                        //System.out.println("Key: " + hasKey);
+                    }
+                    System.out.println("Key: " + hasKey);
+                }
+            }
+
+        }
+    }
+
+
+    public void draw(Graphics2D g2){
         //g2.setColor(Color.white);
         //g2.fillRect(x, y , gp.tileSize, gp.tileSize);
 
