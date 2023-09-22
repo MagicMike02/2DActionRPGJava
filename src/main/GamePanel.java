@@ -1,6 +1,7 @@
 package main;
 
 import entity.Player;
+import object.SuperObject;
 import tiles.TileManager;
 
 import javax.swing.*;
@@ -32,7 +33,9 @@ public class GamePanel extends JPanel implements Runnable{
     KeyHandler keyH = new KeyHandler();
     Thread gameThread;
     public CollisionChecker cChecker = new CollisionChecker(this);
+    public AssetSetter aSetter = new AssetSetter(this);
     public Player player = new Player(this, keyH);
+    public SuperObject obj[] = new SuperObject[10]; // 10 slots for objects -> can display up to 10 object in the same time
 
     public GamePanel(){
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -41,6 +44,10 @@ public class GamePanel extends JPanel implements Runnable{
 
         this.addKeyListener(keyH);
         this.setFocusable(true);
+    }
+
+    public void setupGame(){
+        aSetter.setObject();
     }
 
     public void startGameThread(){
@@ -95,8 +102,18 @@ public class GamePanel extends JPanel implements Runnable{
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
+        //TILE
         tileM.draw(g2);
 
+        //OBJECTS
+        for (SuperObject superObject : obj) {
+            if (superObject != null) {
+                //System.out.println("OBJECTS: " + obj[i] + " -> " + obj[i].image);
+                superObject.draw(g2, this);
+            }
+        }
+
+        //PLAYER
         player.draw(g2);
 
         g2.dispose();

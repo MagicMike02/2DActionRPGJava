@@ -126,14 +126,12 @@ public class TileManager {
                 e.printStackTrace();
             }
         }
-
         return numbers;
     }
 
     public void draw(Graphics2D g2){
         int worldCol = 0;
         int worldRow = 0;
-
 
         while(worldCol < gp.maxWorldCol && worldRow < gp.maxWorldRow){
            int tileNum = mapTileNum[worldCol][worldRow];
@@ -152,7 +150,6 @@ public class TileManager {
 
                 g2.drawImage(tile[tileNum].image, screenX, screenY, gp.tileSize, gp.tileSize, null);
             }
-
 
             worldCol++;
 
