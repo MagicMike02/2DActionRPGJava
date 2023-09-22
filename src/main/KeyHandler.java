@@ -8,7 +8,6 @@ public class KeyHandler implements KeyListener{
 
     @Override
     public void keyTyped(KeyEvent e) {
-
     }
 
     @Override

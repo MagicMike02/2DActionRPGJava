@@ -1,6 +1,7 @@
 package main;
 
-import enity.Player;
+import entity.Player;
+import tiles.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,22 +12,18 @@ public class GamePanel extends JPanel implements Runnable{
     final int originalTileSizes = 16; //16x16 pixels
     final int scale = 3; // scale the pixels in bigger resolution
     public final int tileSize = originalTileSizes * scale; //48*48 tiles
-    final int maxScreenCol = 16;
-    final int maxScreenRow = 12;
-    final int screenWidth = tileSize * maxScreenCol; //768 pixels
-    final int screenHeight = tileSize * maxScreenRow; //576 pixels
+    public final int maxScreenCol = 16;
+    public final int maxScreenRow = 12;
+    public final int screenWidth = tileSize * maxScreenCol; //768 pixels
+    public final int screenHeight = tileSize * maxScreenRow; //576 pixels
 
     private static final long ONE_SEC_IN_NANOSEC = 1000000000;
     int FPS = 60;
 
+    TileManager tileM = new TileManager(this);
     KeyHandler keyH = new KeyHandler();
     Thread gameThread;
     Player player = new Player(this, keyH);
-
-
-    int playerX = 100;
-    int playerY = 100;
-    int playerSpeed = 4;
 
     public GamePanel(){
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -72,7 +69,7 @@ public class GamePanel extends JPanel implements Runnable{
             }
 
             if(timer >= ONE_SEC_IN_NANOSEC) {
-                System.out.println("FPS: " + drawCount);
+                //System.out.println("FPS: " + drawCount);
                 timer = 0;
                 drawCount = 0;
             }
@@ -88,6 +85,8 @@ public class GamePanel extends JPanel implements Runnable{
 
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
+
+        tileM.draw(g2);
 
         player.draw(g2);
 
