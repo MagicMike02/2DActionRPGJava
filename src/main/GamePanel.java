@@ -32,7 +32,8 @@ public class GamePanel extends JPanel implements Runnable{
     //System
     TileManager tileM = new TileManager(this);
     KeyHandler keyH = new KeyHandler();
-    Sound sound = new Sound();
+    Sound music = new Sound();//background music
+    Sound se = new Sound();//sound effetcs
 
 
     public CollisionChecker cChecker = new CollisionChecker(this);
@@ -55,7 +56,7 @@ public class GamePanel extends JPanel implements Runnable{
 
     public void setupGame(){
         aSetter.setObject();
-        playMusic(0);//index of background sound BlueBoyAdventure
+        playMusic(0);//index of background music BlueBoyAdventure
     }
 
     public void startGameThread(){
@@ -129,16 +130,16 @@ public class GamePanel extends JPanel implements Runnable{
     }
 
     public void playMusic(int i){
-        sound.setFile(i);
-        sound.play();
-        sound.loop();
+        music.setFile(i);
+        music.play();
+        music.loop();
     }
 
     public void stopMusic(){
-        sound.stop();
+        music.stop();
     }
     public void playSE(int i){ // Sound Effect
-        sound.setFile(i);
-        sound.play();
+        se.setFile(i);
+        se.play();
     }
 }
