@@ -23,19 +23,26 @@ public class GamePanel extends JPanel implements Runnable{
     //WORLD SETTINGS
     public final int maxWorldCol = 50;
     public final int maxWorldRow = 50;
-    public final int worldWidth = tileSize * maxScreenCol;
-    public final int worldHeight = tileSize * maxScreenRow;
 
+//    public final int worldWidth = tileSize * maxScreenCol;
+//    public final int worldHeight = tileSize * maxScreenRow;
 
     int FPS = 60;
 
+    //System
     TileManager tileM = new TileManager(this);
     KeyHandler keyH = new KeyHandler();
-    Thread gameThread;
+    Sound sound = new Sound();
+
+
     public CollisionChecker cChecker = new CollisionChecker(this);
     public AssetSetter aSetter = new AssetSetter(this);
+
+    Thread gameThread;
+
+    //Entity and Object
     public Player player = new Player(this, keyH);
-    public SuperObject obj[] = new SuperObject[10]; // 10 slots for objects -> can display up to 10 object in the same time
+    public SuperObject[] obj = new SuperObject[10]; // 10 slots for objects -> can display up to 10 object in the same time
 
     public GamePanel(){
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -48,6 +55,7 @@ public class GamePanel extends JPanel implements Runnable{
 
     public void setupGame(){
         aSetter.setObject();
+        playMusic(0);//index of background sound BlueBoyAdventure
     }
 
     public void startGameThread(){
@@ -118,5 +126,19 @@ public class GamePanel extends JPanel implements Runnable{
 
         g2.dispose();
 
+    }
+
+    public void playMusic(int i){
+        sound.setFile(i);
+        sound.play();
+        sound.loop();
+    }
+
+    public void stopMusic(){
+        sound.stop();
+    }
+    public void playSE(int i){ // Sound Effect
+        sound.setFile(i);
+        sound.play();
     }
 }

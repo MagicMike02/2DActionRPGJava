@@ -112,17 +112,24 @@ public class Player extends Entity{
             String objectName = gp.obj[i].name;
             switch(objectName){
                 case "Key" -> {
+                    gp.playSE(1); // Coin sound Effect
                     hasKey++;
                     gp.obj[i] = null; // delete the Key touched
                     System.out.println("Key: " + hasKey);
                 }
                 case "Door" -> {
                     if(hasKey > 0){
+                        gp.playSE(3); // Door sound Effect
                         gp.obj[i] = null; // delete the Key touched
                         hasKey--;
                         //System.out.println("Key: " + hasKey);
                     }
                     System.out.println("Key: " + hasKey);
+                }
+                case "Boots" -> {
+                    gp.playSE(2); // Boots sound Effect
+                    speed += 1;
+                    gp.obj[i] = null; // delete the Boots touched
                 }
             }
 
