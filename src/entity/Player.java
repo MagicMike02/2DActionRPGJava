@@ -14,7 +14,7 @@ public class Player extends Entity{
     public final int screenX;
     public final int screenY;
 
-    int hasKey = 0;
+    public int hasKey = 0;
 
     public Player(GamePanel gp, KeyHandler key){
         this.gp = gp;
@@ -40,8 +40,8 @@ public class Player extends Entity{
     public void setDefaultValues(){
         this.worldX = gp.tileSize * 23;
         this.worldY = gp.tileSize * 21;
-        //this.speed = 4;
-        this.speed = 8; //TODO: CANCELLARE -> Solo per testare il game
+        this.speed = 4;
+        //this.speed = 8; //TODO: CANCELLARE -> Solo per testare il game
         direction = "down";
     }
 
@@ -115,22 +115,33 @@ public class Player extends Entity{
                     gp.playSE(1); // Coin sound Effect
                     hasKey++;
                     gp.obj[i] = null; // delete the Key touched
-                    System.out.println("Key: " + hasKey);
+                    gp.ui.showMessage("You got a key!");
                 }
                 case "Door" -> {
                     if(hasKey > 0){
                         gp.playSE(3); // Door sound Effect
                         gp.obj[i] = null; // delete the Key touched
                         hasKey--;
-                        //System.out.println("Key: " + hasKey);
+                        gp.ui.showMessage("You opened the door!");
                     }
-                    System.out.println("Key: " + hasKey);
+                    else{
+                        gp.ui.showMessage("You need a key!");
+
+                    }
                 }
                 case "Boots" -> {
                     gp.playSE(2); // Boots sound Effect
                     speed += 1;
                     gp.obj[i] = null; // delete the Boots touched
+                    gp.ui.showMessage("Speed Up!");
                 }
+
+                case "Chest" -> {
+                    gp.ui.gameFinished = true;
+                    gp.stopMusic();
+                    gp.playSE(4);
+                }
+
             }
 
         }
