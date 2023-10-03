@@ -1,5 +1,6 @@
 package main;
 
+import entity.Entity;
 import entity.Player;
 import object.SuperObject;
 import tiles.TileManager;
@@ -44,6 +45,7 @@ public class GamePanel extends JPanel implements Runnable{
     //Entity and Object
     public Player player = new Player(this, keyH);
     public SuperObject[] obj = new SuperObject[10]; // 10 slots for objects -> can display up to 10 object in the same time
+    public Entity[] npc = new Entity[10];
 
     //GAME SETTIGNS
     public int gameState;
@@ -61,6 +63,7 @@ public class GamePanel extends JPanel implements Runnable{
 
     public void setupGame(){
         aSetter.setObject();
+        aSetter.setNPC();
         playMusic(0);//index of background music BlueBoyAdventure
         gameState = playState;
     }
@@ -110,8 +113,16 @@ public class GamePanel extends JPanel implements Runnable{
     public void update() {
 
         if(gameState == playState){
+            //PLAYER
             player.update();
+            //NPC
+            for (Entity entity : npc) {
+                if (entity != null) {
+                    entity.update();
+                }
+            }
         }
+
         if(gameState == pauseState){
             //nothing
         }
@@ -138,6 +149,13 @@ public class GamePanel extends JPanel implements Runnable{
             if (superObject != null) {
                 //System.out.println("OBJECTS: " + obj[i] + " -> " + obj[i].image);
                 superObject.draw(g2, this);
+            }
+        }
+
+        //NPC
+        for(int i = 0; i< npc.length; i++) {
+            if(npc[i] != null) {
+                npc[i].draw(g2);
             }
         }
 
