@@ -7,7 +7,7 @@ public class KeyHandler implements KeyListener{
 
 
     GamePanel gp;
-    public boolean upPressed, downPressed, leftPressed, rightPressed;
+    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed;
     boolean checkDrawTime = false;
 
     public KeyHandler(GamePanel gp) {
@@ -22,23 +22,40 @@ public class KeyHandler implements KeyListener{
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
 
-        if (code == KeyEvent.VK_W) {
-            upPressed = true;
-        }
-        if (code == KeyEvent.VK_S) {
-            downPressed = true;
-        }
-        if (code == KeyEvent.VK_A) {
-            leftPressed = true;
-        }
-        if (code == KeyEvent.VK_D) {
-            rightPressed = true;
-        }
-        if (code == KeyEvent.VK_P) {
-            if(gp.gameState == gp.playState){
+        //PLAY STATE
+        if(gp.gameState == gp.playState){
+
+            if (code == KeyEvent.VK_W) {
+                upPressed = true;
+            }
+            if (code == KeyEvent.VK_S) {
+                downPressed = true;
+            }
+            if (code == KeyEvent.VK_A) {
+                leftPressed = true;
+            }
+            if (code == KeyEvent.VK_D) {
+                rightPressed = true;
+            }
+            if (code == KeyEvent.VK_P) {
                 gp.gameState = gp.pauseState;
             }
-            else if(gp.gameState == gp.pauseState){
+            if (code == KeyEvent.VK_ENTER) { // press enter on collision to interact with npcs
+                enterPressed = true;
+            }
+
+        }
+
+//        PAUSE STATE
+        else if(gp.gameState == gp.pauseState){
+            if(code == KeyEvent.VK_P) {
+                gp.gameState = gp.playState;
+            }
+        }
+
+//        DIALOGUE STATE
+        else if(gp.gameState == gp.dialogueState){
+            if(code == KeyEvent.VK_ENTER) {
                 gp.gameState = gp.playState;
             }
         }

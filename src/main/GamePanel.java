@@ -31,10 +31,10 @@ public class GamePanel extends JPanel implements Runnable{
     int FPS = 60;
 
     //System
-    TileManager tileM = new TileManager(this);
-    KeyHandler keyH = new KeyHandler(this);
-    Sound music = new Sound();//background music
-    Sound se = new Sound();//sound effetcs
+    public TileManager tileM = new TileManager(this);
+    public KeyHandler keyH = new KeyHandler(this);
+    public Sound music = new Sound();//background music
+    public Sound se = new Sound();//sound effetcs
 
 
     public CollisionChecker cChecker = new CollisionChecker(this);
@@ -51,6 +51,7 @@ public class GamePanel extends JPanel implements Runnable{
     public int gameState;
     public final int playState = 1;
     public final int pauseState = 2;
+    public final int dialogueState = 3;
 
     public GamePanel(){
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -153,7 +154,7 @@ public class GamePanel extends JPanel implements Runnable{
         }
 
         //NPC
-        for(int i = 0; i< npc.length; i++) {
+        for(int i = 0; i < npc.length; i++) {
             if(npc[i] != null) {
                 npc[i].draw(g2);
             }

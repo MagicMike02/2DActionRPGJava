@@ -24,6 +24,8 @@ public class Entity {
 
     public boolean collisionOn = false;
     public int actionLockCounter;
+    String[] dialogues = new String[20];
+    int dialogueIndex = 0;
 
     public Entity(GamePanel gp){
         this.gp = gp;
@@ -44,11 +46,19 @@ public class Entity {
 
         //if collision is False, player can move
         if(!collisionOn){
-            switch(direction){
-                case "up" -> worldY -= speed;
-                case "down" -> worldY += speed;
-                case "left" ->  worldX -= speed;
-                case "right" -> worldX += speed;
+            switch (direction) {
+                case "up":
+                    worldY -= speed;
+                    break;
+                case "down":
+                    worldY += speed;
+                    break;
+                case "left":
+                    worldX -= speed;
+                    break;
+                case "right":
+                    worldX += speed;
+                    break;
             }
         }
 
@@ -86,12 +96,35 @@ public class Entity {
             worldY - gp.tileSize < gp.player.worldY + gp.player.screenY) {
 
             switch (direction) {
-                case "up" -> image = spriteNum == 1 ? up1 : up2;
-                case "down" -> image = spriteNum == 1 ? down1 : down2;
-                case "left" ->  image = spriteNum == 1 ? left1 : left2;
-                case "right" ->  image = spriteNum == 1 ? right1 : right2;
+                case "up":
+                    image = spriteNum == 1 ? up1 : up2;
+                    break;
+                case "down":
+                    image = spriteNum == 1 ? down1 : down2;
+                    break;
+                case "left":
+                    image = spriteNum == 1 ? left1 : left2;
+                    break;
+                case "right":
+                    image = spriteNum == 1 ? right1 : right2;
+                    break;
             }
             g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+        }
+    }
+
+    public void speak() {
+        if(dialogues[dialogueIndex] == null) {
+            dialogueIndex = 0;
+        }
+        gp.ui.currentDialogue = dialogues[dialogueIndex];
+        dialogueIndex++;
+
+        switch (gp.player.direction) {
+            case "up" -> direction = "down";
+            case "down" -> direction = "up";
+            case "right" -> direction = "left";
+            case "left" -> direction = "right";
         }
     }
 }

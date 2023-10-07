@@ -138,8 +138,8 @@ public class CollisionChecker {
     public int checkEntity(Entity entity, Entity[] target){
         int index = 999;
 
-        for(int i = 0; i< target.length; i++){
-            if(target[i] != null){
+        for(int i = 0; i < target.length; i++){
+            if(target[i] != null){ // This prevents it to read null objects
                 //get entity's solid area position
                 entity.solidArea.x = entity.worldX + entity.solidArea.x;
                 entity.solidArea.y = entity.worldY + entity.solidArea.y;
@@ -154,31 +154,28 @@ public class CollisionChecker {
                         entity.solidArea.y -= entity.speed;
                         if(entity.solidArea.intersects(target[i].solidArea)){
                             entity.collisionOn = true;
-                            index = 1;
+                            index = i;
                         }
                     }
                     case "down" -> {
                         entity.solidArea.y += entity.speed;
                         if(entity.solidArea.intersects(target[i].solidArea)){
-                            index = 1;
+                            index = i;
                             entity.collisionOn = true;
-
                         }
                     }
                     case "left" -> {
                         entity.solidArea.x -= entity.speed;
                         if(entity.solidArea.intersects(target[i].solidArea)){
                             entity.collisionOn = true;
-                            index = 1;
-
+                            index = i;
                         }
                     }
                     case "right" -> {
                         entity.solidArea.x += entity.speed;
                         if(entity.solidArea.intersects(target[i].solidArea)){
                             entity.collisionOn = true;
-                            index = 1;
-
+                            index = i;
                         }
                     }
                 }

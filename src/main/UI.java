@@ -15,9 +15,7 @@ public class UI {
     public String message = "";
     int messageCounter = 0;
     public boolean gameFinished = false;
-
-    double playTime;
-    DecimalFormat dFormat = new DecimalFormat("#0.00");
+    public String currentDialogue = "";
     private Graphics2D g2;
 
     public UI(GamePanel gp) {
@@ -25,7 +23,7 @@ public class UI {
         arial_40 = new Font("Arial", Font.PLAIN, 40);
         arial_80B = new Font("Arial", Font.BOLD, 80);
 
-        //display key image in the ui
+//        display key image in the ui
 //        OBJ_Key key = new OBJ_Key(gp);
 //        keyImage = key.image;
     }
@@ -39,12 +37,51 @@ public class UI {
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 80f));
         g2.setColor(Color.WHITE);
 
+        //PLAY STATE
         if(gp.gameState == gp.playState){
             //do playstate stuff
         }
+
+        //PAUSE STATE
         if(gp.gameState == gp.pauseState){
              this.drawPauseScreen();
         }
+
+        //DIALOGUE STATE
+        if(gp.gameState == gp.dialogueState){
+            this.drawDialogueScreen();
+        }
+
+    }
+
+    public void drawDialogueScreen(){
+        //Dialogue Window
+        int x = gp.tileSize * 2;
+        int y = gp.tileSize / 2;
+        int width = gp.screenWidth - (gp.tileSize * 4);
+        int height = gp.tileSize * 4;
+        drawSubWindow(x, y, width, height);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        x += gp.tileSize;
+        y += gp.tileSize;
+
+        for (String line : currentDialogue.split("\n")){ // write dialogues better with format by spitting the strings after \n simbol (g2 doesnt read \n)
+            g2.drawString(line,x,y);
+            y += 40;
+        }
+    }
+
+    public void drawSubWindow(int x, int y, int width, int height){
+        Color c = new Color(0,0,0);
+        g2.setColor(c);
+
+        g2.fillRoundRect(x, y, width, height,35, 35);
+
+        c = new Color(255,255,255, 210);
+        g2.setColor(c);
+        g2.setStroke(new BasicStroke(5));
+        g2.drawRoundRect(x+5, y+5, width-10, height-10,25,25);
     }
 
     public void drawPauseScreen(){
