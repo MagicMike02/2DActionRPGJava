@@ -78,9 +78,19 @@ public class Player extends Entity {
 
     public void update() {
 
+        if (invincible == true) {
+            //must be outside the keyPressed if
+            invincibilityCounter++;
+            if (invincibilityCounter > gp.getFPS()) {
+                invincible = false;
+                invincibilityCounter = 0;
+            }
+        }
+
         if (attacking) {
             attacking();
-        } else if (keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed || keyH.enterPressed) { // Moving animation
+        }
+        else if (keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed || keyH.enterPressed) { // Moving animation
             if (keyH.upPressed) {
                 direction = "up";
             } else if (keyH.downPressed) {
@@ -130,7 +140,12 @@ public class Player extends Entity {
                 else spriteNum = 1;
                 spriteCounter = 0;
             }
+
+
         }
+        //allows to player to get dmg just once each second and not once per frame
+        // giving him an invincibility time which last a second
+
 
 
     }
@@ -193,6 +208,7 @@ public class Player extends Entity {
                 gp.gameState = gp.dialogueState;
                 gp.npc[i].speak();
             } else {
+                gp.playSE(7);
                 attacking = true;
             }
         }
@@ -200,7 +216,8 @@ public class Player extends Entity {
 
     public void contactMonster(int i) {
         if (i != 999) {
-            if (invincible == false) {
+            if (!invincible) {
+                gp.playSE(6);
                 life -= 1;
                 invincible = true;
             }
@@ -209,13 +226,16 @@ public class Player extends Entity {
 
     public void demageMonster(int i) {
         if (i != 999) {
-            if(gp.monster[i].invincible == false) {
+            if(!gp.monster[i].invincible) {
+                gp.playSE(5);
                 gp.monster[i].life -= 1;
                 gp.monster[i].invincible = true;
+                gp.monster[i].damageReaction();
 
                 //monster dies
                 if(gp.monster[i].life <= 0){
-                    gp.monster[i] = null;
+//                    gp.monster[i] = null;
+                    gp.monster[i].dying = true;
                 }
             }
         }
@@ -279,8 +299,8 @@ public class Player extends Entity {
 
 
         //DEBUG
-//        g2.setFont(new Font("Arial", Font.PLAIN, 26));
-//        g2.setColor(Color.WHITE);
-//        g2.drawString("InvisibleCounter: "+invincibilityCounter,10,400);
+        g2.setFont(new Font("Arial", Font.PLAIN, 26));
+        g2.setColor(Color.WHITE);
+        g2.drawString("InvisibleCounter: "+invincibilityCounter,10,400);
     }
 }

@@ -31,12 +31,17 @@ public class Entity {
     public boolean collisionOn = false;
     public boolean invincible = false;
     boolean attacking = false;
+    public boolean alive = true;
+    public boolean dying = false;
+    boolean hpBarOn = false;
 
 
     // COUNTER
     public int spriteCounter = 0;
     public int actionLockCounter = 0;
     public int invincibilityCounter = 0;
+    int dyingCounter = 0;
+    int hpBarCounter = 0;
 
 
     // CHARACTER ATTRIBUTES
@@ -54,6 +59,9 @@ public class Entity {
     public void setAction() {
 
     }
+    public void damageReaction(){
+
+    }
 
     public void update() {
         setAction();
@@ -67,10 +75,11 @@ public class Entity {
 
         boolean contactPlayer = gp.cChecker.checkPlayer(this);
 
-        //allows monster to deal dmg with THEY touch the player
-        if(this.type == 2 && contactPlayer == true) {
+        //allows monster (type 2) to deal dmg with THEY touch the player
+        if(this.type == 2 && contactPlayer) {
             //check if player is in invincible state
-            if(gp.player.invincible == false){
+            if(!gp.player.invincible){
+                gp.playSE(6);
                 gp.player.life -= 1;
                 gp.player.invincible = true;
             }
@@ -94,8 +103,8 @@ public class Entity {
             spriteCounter = 0;
         }
 
-        //allows to player to get dmg just once each second and not once per frame
-        // giving him an invincibility time which last a second
+        //allows to entity to get dmg just once in a period of time and not once per frame
+        // giving him an invincibility time which last a some short time
         if (invincible == true) {
             invincibilityCounter++;
             if (invincibilityCounter > gp.getFPS()-20) {
@@ -145,15 +154,63 @@ public class Entity {
                     break;
             }
 
+
+            //Monster HealthBar
+            if(type == 2 && hpBarOn) {
+                double oneScale = (double) gp.tileSize/maxLife; // scale the hpbar based on the enemie width (for slimes is 1 tile)
+                double hpBarValue = oneScale*life;
+
+                g2.setColor(new Color (35,35,35));
+                g2.fillRect(screenX-1, screenY-16, gp.tileSize+2, 12); // Border HealthBar
+
+                g2.setColor(new Color(255, 0, 30));
+                g2.fillRect(screenX, screenY-15, (int)hpBarValue, 10); // screenY-15 to display it up the monster
+
+                hpBarCounter++;
+
+                //show counter for 10 seconds
+                if(hpBarCounter > 600){
+                    hpBarCounter = 0;
+                    hpBarOn = false;
+                }
+            }
+
             if (invincible == true) {
-                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f));
+                hpBarOn = true;
+                hpBarCounter = 0; // if player attack refresh counter
+                changeAlpha(g2, 0.4F);
+            }
+
+            if(dying){
+                dyingAnimation(g2);
             }
 
             g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
 
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+            changeAlpha(g2, 1F);
 
         }
+    }
+
+    public void dyingAnimation(Graphics2D g2){
+        dyingCounter++;
+
+        int frequency = 5;
+        if(dyingCounter <= frequency) changeAlpha(g2, 1f);
+        if(dyingCounter > frequency*2 && dyingCounter <= frequency*3) changeAlpha(g2, 0f);
+        if(dyingCounter > frequency*3 && dyingCounter <= frequency*4) changeAlpha(g2, 1f);
+        if(dyingCounter > frequency*4 && dyingCounter <= frequency*5) changeAlpha(g2, 0f);
+        if(dyingCounter > frequency*5 && dyingCounter <= frequency*6) changeAlpha(g2, 1f);
+        if(dyingCounter > frequency*6 && dyingCounter <= frequency*7) changeAlpha(g2, 0f);
+        if(dyingCounter > frequency*7 && dyingCounter <= frequency*8) changeAlpha(g2, 1f);
+        if(dyingCounter > frequency*8){
+            dying = false;
+            alive = false;
+        }
+    }
+
+    public void changeAlpha(Graphics2D g2, float alphaValue){
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alphaValue));
     }
 
     public void speak() {
