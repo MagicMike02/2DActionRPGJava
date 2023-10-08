@@ -12,9 +12,12 @@ public class Entity {
     public final GamePanel gp;
 
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
+    public BufferedImage attackUp1, attackUp2, attackDown1, attackDown2, attackLeft1, attackLeft2, attackRight1, attackRight2;
     public BufferedImage image, image2, image3;
 
-    public Rectangle solidArea = new Rectangle(0, 0, 40, 40);
+    public Rectangle solidArea = new Rectangle(0, 0, 40, 40); // area of the entity
+    public Rectangle attackArea = new Rectangle(0, 0, 0, 0); // attack area/range (depending on the weapon long/short-wide/narrow)
+
     public int solidAreaDefaultX, solidAreaDefaultY;
     public boolean collision = false;
     String[] dialogues = new String[20];
@@ -27,6 +30,7 @@ public class Entity {
     int dialogueIndex = 0;
     public boolean collisionOn = false;
     public boolean invincible = false;
+    boolean attacking = false;
 
 
     // COUNTER
@@ -89,15 +93,25 @@ public class Entity {
             else spriteNum = 1;
             spriteCounter = 0;
         }
+
+        //allows to player to get dmg just once each second and not once per frame
+        // giving him an invincibility time which last a second
+        if (invincible == true) {
+            invincibilityCounter++;
+            if (invincibilityCounter > gp.getFPS()-20) {
+                invincible = false;
+                invincibilityCounter = 0;
+            }
+        }
     }
 
-    public BufferedImage setup(String imageName) {
+    public BufferedImage setup(String imageName, int width, int height) {
         UtilityTool uTool = new UtilityTool();
         BufferedImage image = null;
 
         try {
             image = ImageIO.read(getClass().getClassLoader().getResourceAsStream(imageName + ".png"));
-            image = uTool.scaleImage(image, gp.tileSize, gp.tileSize);
+            image = uTool.scaleImage(image, width, height);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -130,7 +144,15 @@ public class Entity {
                     image = spriteNum == 1 ? right1 : right2;
                     break;
             }
+
+            if (invincible == true) {
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f));
+            }
+
             g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+
         }
     }
 
