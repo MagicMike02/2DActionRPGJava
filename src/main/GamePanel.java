@@ -30,19 +30,19 @@ public class GamePanel extends JPanel implements Runnable{
 
     int FPS = 60;
 
-    //System
+    //SYSTEM
     public TileManager tileM = new TileManager(this);
     public KeyHandler keyH = new KeyHandler(this);
     public Sound music = new Sound();//background music
     public Sound se = new Sound();//sound effetcs
-
-
     public CollisionChecker cChecker = new CollisionChecker(this);
     public AssetSetter aSetter = new AssetSetter(this);
     public UI ui = new UI(this);
+    public EventHandler eHandler = new EventHandler(this);
+
     Thread gameThread;
 
-    //Entity and Object
+    //ENTITY AND OBJECTS
     public Player player = new Player(this, keyH);
     public SuperObject[] obj = new SuperObject[10]; // 10 slots for objects -> can display up to 10 object in the same time
     public Entity[] npc = new Entity[10];
