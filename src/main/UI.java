@@ -48,7 +48,8 @@ public class UI {
         this.message = text;
         messageOn = true;
     }
-    public void draw(Graphics2D g2){
+
+    public void draw(Graphics2D g2) {
         this.g2 = g2;
 
         g2.setFont(maruMonica);
@@ -59,55 +60,61 @@ public class UI {
         g2.setColor(Color.WHITE);
 
         //TITLE STATE
-        if(gp.gameState == gp.titleState){
+        if (gp.gameState == gp.titleState) {
             drawTitleScreen();
         }
 
         //PLAY STATE
-        if(gp.gameState == gp.playState){
+        if (gp.gameState == gp.playState) {
             drawPlayerLife();
         }
 
         //PAUSE STATE
-        if(gp.gameState == gp.pauseState){
+        if (gp.gameState == gp.pauseState) {
             drawPlayerLife();
             drawPauseScreen();
         }
 
         //DIALOGUE STATE
-        if(gp.gameState == gp.dialogueState){
+        if (gp.gameState == gp.dialogueState) {
             drawDialogueScreen();
         }
 
+        //CHARACTER STATE
+        if (gp.gameState == gp.characterState) {
+            drawCharacterScreen();
+        }
+
     }
-    public void drawPlayerLife(){
+
+    public void drawPlayerLife() {
 
         //gp.player.life = 5; //debug
 
-        int x = gp.tileSize/2;
-        int y = gp.tileSize/2;
+        int x = gp.tileSize / 2;
+        int y = gp.tileSize / 2;
         int i = 0;
 
         //DRAW MAX LIFE
-        while(i < gp.player.maxLife/2){
+        while (i < gp.player.maxLife / 2) {
             g2.drawImage(heart_blank, x, y, null);
             i++;
             x += gp.tileSize;
         }
 
         //RESET paint position
-        x = gp.tileSize/2;
-        y = gp.tileSize/2;
+        x = gp.tileSize / 2;
+        y = gp.tileSize / 2;
         i = 0;
 
         //DRAW CURRENT LIFE
-        while(i < gp.player.life){
+        while (i < gp.player.life) {
             //Draw 1st half heart
             g2.drawImage(heart_half, x, y, null);
             i++;
 
             //if current life (life) has more that half heart, draw the full heart
-            if(i < gp.player.life){
+            if (i < gp.player.life) {
                 g2.drawImage(heart_full, x, y, null);
             }
 
@@ -117,9 +124,10 @@ public class UI {
         }
 
     }
-    public void drawTitleScreen(){
 
-        if(titleScreenState == 0) {
+    public void drawTitleScreen() {
+
+        if (titleScreenState == 0) {
 
             g2.setColor(new Color(0, 0, 0));
             g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
@@ -169,22 +177,21 @@ public class UI {
             if (commandNumber == 2) {
                 g2.drawString(">", x - gp.tileSize, y);
             }
-        }
-        else if (titleScreenState == 1){
+        } else if (titleScreenState == 1) {
             //CLASS SELECTION SCREEM
             g2.setColor(Color.WHITE);
             g2.setFont(g2.getFont().deriveFont(42F));
 
             String text = "Select your class!";
             int x = getXForCenteredText(text);
-            int y = gp.tileSize*3;
+            int y = gp.tileSize * 3;
             g2.drawString(text, x, y);
 
             text = "Fighter";
             x = getXForCenteredText(text);
-            y += gp.tileSize*3;
+            y += gp.tileSize * 3;
             g2.drawString(text, x, y);
-            if(commandNumber == 0){
+            if (commandNumber == 0) {
                 g2.drawString(">", x - gp.tileSize, y);
             }
 
@@ -192,7 +199,7 @@ public class UI {
             x = getXForCenteredText(text);
             y += gp.tileSize;
             g2.drawString(text, x, y);
-            if(commandNumber == 1){
+            if (commandNumber == 1) {
                 g2.drawString(">", x - gp.tileSize, y);
             }
 
@@ -200,7 +207,7 @@ public class UI {
             x = getXForCenteredText(text);
             y += gp.tileSize;
             g2.drawString(text, x, y);
-            if(commandNumber == 2){
+            if (commandNumber == 2) {
                 g2.drawString(">", x - gp.tileSize, y);
             }
 
@@ -208,7 +215,7 @@ public class UI {
             x = getXForCenteredText(text);
             y += gp.tileSize;
             g2.drawString(text, x, y);
-            if(commandNumber == 3){
+            if (commandNumber == 3) {
                 g2.drawString(">", x - gp.tileSize, y);
 
             }
@@ -216,18 +223,18 @@ public class UI {
 
     }
 
-    public void drawPauseScreen(){
+    public void drawPauseScreen() {
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 80F));
         String text = "PAUSED";
 
         int x = this.getXForCenteredText(text);
-        int y = gp.screenHeight/2;
+        int y = gp.screenHeight / 2;
 
         g2.drawString(text, x, y);
 
     }
 
-    public void drawDialogueScreen(){
+    public void drawDialogueScreen() {
         //Dialogue Window
         int x = gp.tileSize * 2;
         int y = gp.tileSize / 2;
@@ -239,25 +246,144 @@ public class UI {
         x += gp.tileSize;
         y += gp.tileSize;
 
-        for (String line : currentDialogue.split("\n")){ // write dialogues better with format by spitting the strings after \n simbol (g2 doesnt read \n)
-            g2.drawString(line,x,y);
+        for (String line : currentDialogue.split("\n")) { // write dialogues better with format by spitting the strings after \n simbol (g2 doesnt read \n)
+            g2.drawString(line, x, y);
             y += 40;
         }
     }
 
-    public void drawSubWindow(int x, int y, int width, int height){
-        Color c = new Color(0,0,0);
+    public void drawCharacterScreen() {
+        // Create a frame
+        final int frameX = gp.tileSize;
+        final int frameY = gp.tileSize;
+        final int frameWidth = gp.tileSize * 5;
+        final int frameHeight = gp.tileSize * 10;
+
+        drawSubWindow(frameX, frameY, frameWidth, frameHeight);
+
+        // TEXT
+        g2.setColor(Color.WHITE);
+        g2.setFont(g2.getFont().deriveFont(32F));
+
+        int textX = frameX + 20;
+        int textY = frameY + gp.tileSize;
+
+        final int lineHeight = 35;
+
+        // NAMES
+        g2.drawString("Level", textX, textY);
+        textY += lineHeight;
+
+        g2.drawString("Life", textX, textY);
+        textY += lineHeight;
+
+        g2.drawString("Strength", textX, textY);
+        textY += lineHeight;
+
+        g2.drawString("Dexterity", textX, textY);
+        textY += lineHeight;
+
+        g2.drawString("Attack", textX, textY);
+        textY += lineHeight;
+
+        g2.drawString("Defense", textX, textY);
+        textY += lineHeight;
+
+        g2.drawString("Exp", textX, textY);
+        textY += lineHeight;
+
+        g2.drawString("Next Level", textX, textY);
+        textY += lineHeight;
+
+        g2.drawString("Coin", textX, textY);
+        textY += lineHeight + 20;  // more space under
+
+        g2.drawString("Weapon", textX, textY);
+        textY += lineHeight + 15;  // more space under
+
+        g2.drawString("Shield", textX, textY);
+        textY += lineHeight;
+
+
+        // VALUES
+        int tailX = (frameX + frameWidth) - 30;
+
+        //Reset textY
+        textY = frameY + gp.tileSize;
+        String value;
+
+        value = String.valueOf(gp.player.level);
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+
+        value = String.valueOf(gp.player.life + "/" + gp.player.maxLife);
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        value = String.valueOf(gp.player.strength);
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        value = String.valueOf(gp.player.dexterity);
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        value = String.valueOf(gp.player.attack);
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        value = String.valueOf(gp.player.defense);
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        value = String.valueOf(gp.player.exp);
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        value = String.valueOf(gp.player.nextLevelExp);
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        value = String.valueOf(gp.player.coin);
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        // Weapon Images
+        g2.drawImage(gp.player.currentWeapon.down1, tailX-gp.tileSize, textY-14, null);
+        textY += gp.tileSize;
+        g2.drawImage(gp.player.currentShield.down1, tailX-gp.tileSize, textY-14, null);
+
+    }
+
+    public void drawSubWindow(int x, int y, int width, int height) {
+        Color c = new Color(0, 0, 0);
         g2.setColor(c);
 
-        g2.fillRoundRect(x, y, width, height,35, 35);
+        g2.fillRoundRect(x, y, width, height, 35, 35);
 
-        c = new Color(255,255,255, 210);
+        c = new Color(255, 255, 255, 210);
         g2.setColor(c);
         g2.setStroke(new BasicStroke(5));
-        g2.drawRoundRect(x+5, y+5, width-10, height-10,25,25);
+        g2.drawRoundRect(x + 5, y + 5, width - 10, height - 10, 25, 25);
     }
-    public int getXForCenteredText(String text){
-        int length = (int)g2.getFontMetrics().getStringBounds(text, g2).getWidth();
-        return gp.screenWidth/2 - length/2;
+
+    public int getXForCenteredText(String text) {
+        int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+        return gp.screenWidth / 2 - length / 2;
+    }
+
+    public int getXForAlignToRight(String text, int tailX) {
+        int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+        return tailX - length;
     }
 }

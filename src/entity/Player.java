@@ -2,6 +2,8 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
+import object.OBJ_Shield_Wood;
+import object.OBJ_Sword_Normal;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -11,6 +13,7 @@ public class Player extends Entity {
     public final int screenX;
     public final int screenY;
     int standCounter = 0;
+    public boolean attackCanceled = false;
 
     public Player(GamePanel gp, KeyHandler key) {
         super(gp);
@@ -47,10 +50,26 @@ public class Player extends Entity {
         direction = "down";
 
         //Player Status
+        level = 1;
         maxLife = 6; // 3 full heart: 1 = half Heart; 2 = 1 full heart ....
         life = maxLife;
+        strength = 1; // the more strength the more dmg gives
+        dexterity = 1; // the more dexterity the less dmg receives
+        exp = 0;
+        nextLevelExp = 1;
+        coin = 0;
+        currentWeapon = new OBJ_Sword_Normal(gp);
+        currentShield = new OBJ_Shield_Wood(gp);
+        attack = getAttack(); //total attack value is decided by strength and weapon
+        defense = getDefense(); // total defense value is decided by dexterity and shield
     }
 
+    public int getAttack() {
+        return attack = strength * currentWeapon.attackValue;
+    }
+    public int getDefense() {
+        return defense = dexterity * currentShield.defenseValue;
+    }
     public void getImage() {
         up1 = setup("Player/Walking sprites/boy_up_1", gp.tileSize, gp.tileSize);
         up2 = setup("Player/Walking sprites/boy_up_2", gp.tileSize, gp.tileSize);
@@ -129,7 +148,15 @@ public class Player extends Entity {
                     case "right" -> worldX += speed;
                 }
             }
+
+            if(keyH.enterPressed && !attackCanceled){
+                gp.playSE(7);
+                attacking = true;
+                spriteCounter = 0;
+            }
+
             //reset
+            attackCanceled = false;
             gp.keyH.enterPressed = false;
 
 
@@ -205,11 +232,9 @@ public class Player extends Entity {
     public void interactNPC(int i) {
         if (gp.keyH.enterPressed) {
             if (i != 999) {
+                attackCanceled = true;
                 gp.gameState = gp.dialogueState;
                 gp.npc[i].speak();
-            } else {
-                gp.playSE(7);
-                attacking = true;
             }
         }
     }
