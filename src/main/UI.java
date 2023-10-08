@@ -1,6 +1,8 @@
 package main;
 
+import object.OBJ_Heart;
 import object.OBJ_Key;
+import object.SuperObject;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -13,6 +15,7 @@ public class UI {
     private Graphics2D g2;
 
     Font maruMonica, purisaB;
+    BufferedImage heart_full, heart_half, heart_blank;
 
     public boolean messageOn = false;
     public String message = "";
@@ -34,6 +37,12 @@ public class UI {
         } catch (FontFormatException | IOException e) {
             throw new RuntimeException(e);
         }
+
+        //Create HUD OBJ
+        SuperObject heart = new OBJ_Heart(gp);
+        heart_full = heart.image;
+        heart_half = heart.image2;
+        heart_blank = heart.image3;
 
     }
 
@@ -58,21 +67,58 @@ public class UI {
 
         //PLAY STATE
         if(gp.gameState == gp.playState){
-            //do playstate stuff
+            drawPlayerLife();
         }
 
         //PAUSE STATE
         if(gp.gameState == gp.pauseState){
-             this.drawPauseScreen();
+            drawPlayerLife();
+            drawPauseScreen();
         }
 
         //DIALOGUE STATE
         if(gp.gameState == gp.dialogueState){
-            this.drawDialogueScreen();
+            drawDialogueScreen();
         }
 
     }
+    public void drawPlayerLife(){
 
+        //gp.player.life = 5; //debug
+
+        int x = gp.tileSize/2;
+        int y = gp.tileSize/2;
+        int i = 0;
+
+        //DRAW MAX LIFE
+        while(i < gp.player.maxLife/2){
+            g2.drawImage(heart_blank, x, y, null);
+            i++;
+            x += gp.tileSize;
+        }
+
+        //RESET paint position
+        x = gp.tileSize/2;
+        y = gp.tileSize/2;
+        i = 0;
+
+        //DRAW CURRENT LIFE
+        while(i < gp.player.life){
+            //Draw 1st half heart
+            g2.drawImage(heart_half, x, y, null);
+            i++;
+
+            //if current life (life) has more that half heart, draw the full heart
+            if(i < gp.player.life){
+                g2.drawImage(heart_full, x, y, null);
+            }
+
+            //go paint next part of the next heart
+            i++;
+            x += gp.tileSize;
+        }
+
+    }
     public void drawTitleScreen(){
 
         if(titleScreenState == 0) {

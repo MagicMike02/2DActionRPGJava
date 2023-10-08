@@ -39,6 +39,10 @@ public class Player extends Entity{
         this.speed = 4;
         //this.speed = 8; //TODO: CANCELLARE -> Solo per testare il game
         direction = "down";
+
+        //Player Status
+        maxLife = 6; // 3 full heart: 1 = half Heart; 2 = 1 full heart ....
+        life = maxLife;
     }
 
     public void getImage(){
