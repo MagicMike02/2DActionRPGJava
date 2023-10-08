@@ -36,8 +36,10 @@ public class Player extends Entity{
     public void setDefaultValues(){
         this.worldX = gp.tileSize * 23;
         this.worldY = gp.tileSize * 21;
+//        this.worldX = gp.tileSize * 10;
+//        this.worldY = gp.tileSize * 13;
+
         this.speed = 4;
-        //this.speed = 8; //TODO: CANCELLARE -> Solo per testare il game
         direction = "down";
 
         //Player Status
@@ -56,11 +58,9 @@ public class Player extends Entity{
         right2 = setup("Player/Walking sprites/boy_right_2");
     }
 
-
-
     public void update(){
 
-        if(keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed){ // Moving animation
+        if(keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed || keyH.enterPressed){ // Moving animation
             if (keyH.upPressed) {
                 direction = "up";
             }
@@ -74,25 +74,27 @@ public class Player extends Entity{
                 direction = "right";
             }
 
-            //Check Tile Collision
+            //CHECK TILE COLLISION
             collisionOn = false;
             gp.cChecker.checkTile(this);
 
-            //Check Object Collision
+            //CHECK OBJECT COLLISION
             int objIndex = gp.cChecker.checkObject(this, true);
             pickUpObject(objIndex);
 
-            //Check NPC Collision
+            //CHECK NPC COLLISION
             int npcIndex = gp.cChecker.checkEntity(this, gp.npc);
             interactNPC(npcIndex);
 
-            //Check Events
+//            CHECK MONSTER COLLISION
+            int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
+            contactMonster(monsterIndex);
+
+            //CHECK EVENT
             gp.eHandler.checkEvent();
 
-            gp.keyH.enterPressed = false;
-
             //if collision is False, player can move
-            if(!collisionOn){
+            if(collisionOn == false && gp.keyH.enterPressed == false){
                 switch(direction){
                     case "up" -> worldY -= speed;
                     case "down" -> worldY += speed;
@@ -100,6 +102,9 @@ public class Player extends Entity{
                     case "right" -> worldX += speed;
                 }
             }
+            //reset
+            gp.keyH.enterPressed = false;
+
 
             spriteCounter++;
 
@@ -107,6 +112,16 @@ public class Player extends Entity{
                 if(spriteNum == 1) spriteNum = 2;
                 else spriteNum = 1;
                 spriteCounter = 0;
+            }
+        }
+
+        //allows to player to get dmg just once each second and not once per frame
+        // giving him an invincibility time which last a second
+        if(invincible == true){
+            invincibilityCounter++;
+            if(invincibilityCounter > gp.getFPS()) {
+                invincible = false;
+                invincibilityCounter = 0;
             }
         }
     }
@@ -126,6 +141,15 @@ public class Player extends Entity{
         }
     }
 
+    public void contactMonster(int i){
+        if(i != 999){
+            if(invincible == false){
+                life -=  1;
+                invincible = true;
+            }
+        }
+    }
+
     public void draw(Graphics2D g2){
         //g2.setColor(Color.white);
         //g2.fillRect(x, y , gp.tileSize, gp.tileSize);
@@ -138,6 +162,21 @@ public class Player extends Entity{
             case "left" ->  image = spriteNum == 1 ? left1 : left2;
             case "right" ->  image = spriteNum == 1 ? right1 : right2;
         }
+
+        //Invincible visual effects
+        if(invincible == true){
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+        }
+
         g2.drawImage(image, screenX, screenY, null);
+
+        //Reset alpha
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+
+
+        //DEBUG
+//        g2.setFont(new Font("Arial", Font.PLAIN, 26));
+//        g2.setColor(Color.WHITE);
+//        g2.drawString("InvisibleCounter: "+invincibilityCounter,10,400);
     }
 }
