@@ -4,28 +4,35 @@ import object.OBJ_Key;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 
 public class UI {
     GamePanel gp;
-    Font arial_40, arial_80B;
-//    BufferedImage keyImage;
+    private Graphics2D g2;
+
+    Font maruMonica, purisaB;
 
     public boolean messageOn = false;
     public String message = "";
     int messageCounter = 0;
     public boolean gameFinished = false;
     public String currentDialogue = "";
-    private Graphics2D g2;
+
 
     public UI(GamePanel gp) {
         this.gp = gp;
-        arial_40 = new Font("Arial", Font.PLAIN, 40);
-        arial_80B = new Font("Arial", Font.BOLD, 80);
+        try {
+            InputStream is = getClass().getClassLoader().getResourceAsStream("Font/x12y16pxMaruMonica.ttf");
+            maruMonica = Font.createFont(Font.TRUETYPE_FONT, is);
+            is = getClass().getClassLoader().getResourceAsStream("Font/Purisa Bold.ttf");
+            purisaB = Font.createFont(Font.TRUETYPE_FONT, is);
 
-//        display key image in the ui
-//        OBJ_Key key = new OBJ_Key(gp);
-//        keyImage = key.image;
+        } catch (FontFormatException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public void showMessage(String text) {
@@ -34,7 +41,11 @@ public class UI {
     }
     public void draw(Graphics2D g2){
         this.g2 = g2;
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 80f));
+
+        g2.setFont(maruMonica);
+        g2.setFont(purisaB);
+        //gives hint on how to render font (Kinda makes it smoother)
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setColor(Color.WHITE);
 
         //PLAY STATE
@@ -62,7 +73,7 @@ public class UI {
         int height = gp.tileSize * 4;
         drawSubWindow(x, y, width, height);
 
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 22F));
         x += gp.tileSize;
         y += gp.tileSize;
 
@@ -85,6 +96,7 @@ public class UI {
     }
 
     public void drawPauseScreen(){
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 80F));
         String text = "PAUSED";
 
         int x = this.getXForCenteredText(text);
