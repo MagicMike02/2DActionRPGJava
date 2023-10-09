@@ -46,7 +46,6 @@ public class Entity {
 
     // CHARACTER ATTRIBUTES
     public String name;
-    public int type; //0=player, 1=npc, 2=monster
     public int speed;
     public int maxLife;
     public int life;
@@ -67,6 +66,16 @@ public class Entity {
     public int defenseValue;
     public String description = "";
 
+    // TYPE
+    public int type; //0=player, 1=npc, 2=monster
+    public final int type_player = 0;
+    public final int type_npc = 1;
+    public final int type_monster = 2;
+    public final int type_sword = 3;
+    public final int type_axe = 4;
+    public final int type_shield = 5;
+    public final int type_consumable = 6;
+
 
     public Entity(GamePanel gp) {
         this.gp = gp;
@@ -77,6 +86,20 @@ public class Entity {
     }
     public void damageReaction(){
 
+    }
+    public void speak() {
+        if (dialogues[dialogueIndex] == null) {
+            dialogueIndex = 0;
+        }
+        gp.ui.currentDialogue = dialogues[dialogueIndex];
+        dialogueIndex++;
+
+        switch (gp.player.direction) {
+            case "up" -> direction = "down";
+            case "down" -> direction = "up";
+            case "right" -> direction = "left";
+            case "left" -> direction = "right";
+        }
     }
 
     public void update() {
@@ -91,8 +114,8 @@ public class Entity {
 
         boolean contactPlayer = gp.cChecker.checkPlayer(this);
 
-        //allows monster (type 2) to deal dmg with THEY touch the player
-        if(this.type == 2 && contactPlayer) {
+        //allows monster to deal dmg with THEY touch the player
+        if(this.type == type_monster && contactPlayer) {
             //check if player is in invincible state
             if(!gp.player.invincible){
                 gp.playSE(6);
@@ -135,6 +158,9 @@ public class Entity {
             }
         }
     }
+
+    public void use(Entity entity){}
+
 
     public BufferedImage setup(String imageName, int width, int height) {
         UtilityTool uTool = new UtilityTool();
@@ -235,18 +261,5 @@ public class Entity {
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alphaValue));
     }
 
-    public void speak() {
-        if (dialogues[dialogueIndex] == null) {
-            dialogueIndex = 0;
-        }
-        gp.ui.currentDialogue = dialogues[dialogueIndex];
-        dialogueIndex++;
 
-        switch (gp.player.direction) {
-            case "up" -> direction = "down";
-            case "down" -> direction = "up";
-            case "right" -> direction = "left";
-            case "left" -> direction = "right";
-        }
-    }
 }
