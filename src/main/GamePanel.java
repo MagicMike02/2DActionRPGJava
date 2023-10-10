@@ -2,6 +2,7 @@ package main;
 
 import entity.Entity;
 import entity.Player;
+import tile_interactive.InteractiveTile;
 import tiles.TileManager;
 
 import javax.swing.*;
@@ -46,6 +47,7 @@ public class GamePanel extends JPanel implements Runnable {
     public Entity[] obj = new Entity[20]; // 10 slots for objects -> can display up to 10 object in the same time
     public Entity[] npc = new Entity[10];
     public Entity[] monster = new Entity[20];
+    public InteractiveTile[] iTile = new InteractiveTile[50];
 
     public ArrayList<Entity> projectileList = new ArrayList<>();
     public ArrayList<Entity> entityList = new ArrayList<>();
@@ -71,6 +73,7 @@ public class GamePanel extends JPanel implements Runnable {
         aSetter.setObject();
         aSetter.setNPC();
         aSetter.setMonster();
+        aSetter.setInteractiveTiles();
 //      playMusic(0); //index of background music BlueBoyAdventure
         gameState = titleState;
     }
@@ -132,7 +135,6 @@ public class GamePanel extends JPanel implements Runnable {
 
             //MONSTER
             for (int i = 0; i < monster.length; i++) {
-
                 if (monster[i] != null) {
                     if (monster[i].alive && !monster[i].dying) {
                         monster[i].update();
@@ -144,9 +146,8 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
-            //MONSTER
+            //PROJECTILES
             for (int i = 0; i < projectileList.size(); i++) {
-
                 if (projectileList.get(i) != null) {
                     if (projectileList.get(i).alive) {
                         projectileList.get(i).update();
@@ -157,6 +158,12 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
+            //INTERACTIVE TILES
+            for (int i = 0; i < iTile.length; i++) {
+                if (iTile[i] != null) {
+                    iTile[i].update();
+                }
+            }
         }
 
         if (gameState == pauseState) {
@@ -173,7 +180,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         //DEBUG
         long drawStart = 0;
-        if (keyH.checkDrawTime) {
+        if (keyH.showDebugText) {
             drawStart = System.nanoTime();
         }
 
@@ -186,6 +193,12 @@ public class GamePanel extends JPanel implements Runnable {
         else {
             //TILE
             tileM.draw(g2);
+
+            for (int i = 0; i < iTile.length; i++) {
+                if (iTile[i] != null) {
+                    iTile[i].draw(g2);
+                }
+            }
 
             //add entities to the list
             entityList.add(player);
@@ -231,12 +244,30 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         //DEBUG
-        if (keyH.checkDrawTime) {
+        if (keyH.showDebugText) {
             long drawEnd = System.nanoTime();
             long passed = drawEnd - drawStart;
+
+            g2.setFont(new Font("Arial", Font.PLAIN, 20));
             g2.setColor(Color.WHITE);
-            g2.drawString("DrawT Time : " + passed, 10, 400);
-            System.out.println("Drat Time : " + passed);
+            int x = 10;
+            int y = 400;
+            int lineHeight = 20;
+
+
+            g2.drawString("WorldX " + player.worldX,x,y);
+            y += lineHeight;
+            g2.drawString("WorldY " + player.worldY, x, y);
+            y += lineHeight;
+
+            g2.drawString("Col " + (player.worldX + player.solidArea.x)/tileSize, x, y);
+            y += lineHeight;
+
+            g2.drawString("Row " + (player.worldY + player.solidArea.y)/tileSize, x, y);
+            y += lineHeight;
+
+            g2.drawString("DrawT Time : " + passed, x, y);
+
         }
 
 

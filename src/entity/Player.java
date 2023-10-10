@@ -170,9 +170,12 @@ public class Player extends Entity {
             int npcIndex = gp.cChecker.checkEntity(this, gp.npc);
             interactNPC(npcIndex);
 
-//            CHECK MONSTER COLLISION
+            //CHECK MONSTER COLLISION
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
             contactMonster(monsterIndex);
+
+            //CHECK INTERACTIVE TILES COLLISION
+            gp.cChecker.checkEntity(this, gp.iTile);
 
             //CHECK EVENT
             gp.eHandler.checkEvent();
@@ -205,7 +208,6 @@ public class Player extends Entity {
                 else spriteNum = 1;
                 spriteCounter = 0;
             }
-
 
         }
 
@@ -274,6 +276,10 @@ public class Player extends Entity {
             int monsterIndex = gp.cChecker.checkEntity(this,gp.monster);
             damageMonster(monsterIndex, attack);
 
+            int iTileIndex = gp.cChecker.checkEntity(this, gp.iTile);
+            damageInteractiveTile(iTileIndex);
+
+            //After checking collision restore original data
             worldX = currentWorldX;
             worldY = currentWorldY;
             solidArea.width = solidAreaWidth;
@@ -369,6 +375,19 @@ public class Player extends Entity {
         }
         else{
 //            System.out.println("Miss!");
+        }
+    }
+
+    public void damageInteractiveTile(int i){
+        if(i != 999 && gp.iTile[i].destructible
+                && gp.iTile[i].isCorrectItem(this) && !gp.iTile[i].invincible){
+           gp.iTile[i].playSE();
+           gp.iTile[i].life--;
+           gp.iTile[i].invincible = true;
+
+           if(gp.iTile[i].life == 0 ) {
+               gp.iTile[i] = gp.iTile[i].getDestroyedForm();
+           }
         }
     }
 
@@ -468,8 +487,8 @@ public class Player extends Entity {
 
 
         //DEBUG
-        g2.setFont(new Font("Arial", Font.PLAIN, 26));
-        g2.setColor(Color.WHITE);
-        g2.drawString("InvisibleCounter: "+invincibilityCounter,10,400);
+//        g2.setFont(new Font("Arial", Font.PLAIN, 26));
+//        g2.setColor(Color.WHITE);
+//        g2.drawString("InvisibleCounter: "+invincibilityCounter,10,400);
     }
 }

@@ -6,7 +6,7 @@ import java.awt.event.KeyListener;
 public class KeyHandler implements KeyListener {
     GamePanel gp;
     public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, shotKeyPressed;
-    boolean checkDrawTime = false;
+    boolean showDebugText = false;
 
     public KeyHandler(GamePanel gp) {
         this.gp = gp;
@@ -130,6 +130,15 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_F) {
             shotKeyPressed = true;
         }
+        //DEBUG
+        if (code == KeyEvent.VK_T) {
+            showDebugText = !showDebugText;
+        }
+//        if (code == KeyEvent.VK_R){
+//            gp.tileM.loadMap("Map/worldV2.txt");
+//            gp.ui.addMessage("Map reloaded");
+//        }
+
     }
 
     public void pauseState(int code) {
@@ -200,11 +209,6 @@ public class KeyHandler implements KeyListener {
         }
         if (code == KeyEvent.VK_F) {
             shotKeyPressed = false;
-        }
-
-        //DEBUG
-        if (code == KeyEvent.VK_T) {
-            checkDrawTime = !checkDrawTime;
         }
 
     }

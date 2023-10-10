@@ -121,7 +121,7 @@ public class Entity {
 
     public void dropItem(Entity droppedItem) {
         for (int i = 0; i < gp.obj.length; i++) {
-            if (gp.obj[i] == null) { // null valu ein the obj array and put the dropped item
+            if (gp.obj[i] == null) { // null value in the obj array and put the dropped item
                 gp.obj[i] = droppedItem;
 
                 //the dead monster coordinates
@@ -137,11 +137,13 @@ public class Entity {
         setAction();
 
         collisionOn = false;
+
+        //entity have collision with: specific tile, obj, npc, monster, iTale
         gp.cChecker.checkTile(this);
         gp.cChecker.checkObject(this, false);
-
         gp.cChecker.checkEntity(this, gp.npc);
         gp.cChecker.checkEntity(this, gp.monster);
+        gp.cChecker.checkEntity(this, gp.iTile);
 
         boolean contactPlayer = gp.cChecker.checkPlayer(this);
 
@@ -152,7 +154,7 @@ public class Entity {
         }
 
         //if collision is False, player can move
-        if (collisionOn == false) {
+        if (!collisionOn) {
             switch (direction) {
                 case "up" -> worldY -= speed;
                 case "down" -> worldY += speed;
@@ -170,9 +172,9 @@ public class Entity {
 
         //allows to entity to get dmg just once in a period of time and not once per frame
         // giving him an invincibility time which last a some short time
-        if (invincible == true) {
+        if (invincible) {
             invincibilityCounter++;
-            if (invincibilityCounter > gp.getFPS() - 20) {
+            if (invincibilityCounter > 40) {
                 invincible = false;
                 invincibilityCounter = 0;
             }
@@ -236,7 +238,7 @@ public class Entity {
 
             //Monster HealthBar
             if (type == 2 && hpBarOn) {
-                double oneScale = (double) gp.tileSize / maxLife; // scale the hpbar based on the enemie width (for slimes is 1 tile)
+                double oneScale = (double) gp.tileSize / maxLife; // scale the hp bar based on the enemies width (for slimes is 1 tile)
                 double hpBarValue = oneScale * life;
 
                 g2.setColor(new Color(35, 35, 35));
