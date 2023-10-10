@@ -2,6 +2,7 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
+import object.OBJ_Fireball;
 import object.OBJ_Key;
 import object.OBJ_Shield_Wood;
 import object.OBJ_Sword_Normal;
@@ -58,10 +59,11 @@ public class Player extends Entity {
         strength = 1; // the more strength the more dmg gives
         dexterity = 1; // the more dexterity the less dmg receives
         exp = 0;
-        nextLevelExp = 1;
+        nextLevelExp = 5;
         coin = 0;
         currentWeapon = new OBJ_Sword_Normal(gp);
         currentShield = new OBJ_Shield_Wood(gp);
+        projectile = new OBJ_Fireball(gp);
         attack = getAttack(); //total attack value is decided by strength and weapon
         defense = getDefense(); // total defense value is decided by dexterity and shield
     }
@@ -124,7 +126,10 @@ public class Player extends Entity {
 
     public void update() {
 
-        if (invincible == true) {
+        // Invincible state
+        if (invincible) {
+            //allows to player to get dmg just once each second and not once per frame
+            //giving him an invincibility time which last a second
             //must be outside the keyPressed if
             invincibilityCounter++;
             if (invincibilityCounter > gp.getFPS()) {
@@ -133,9 +138,11 @@ public class Player extends Entity {
             }
         }
 
+        //ATTACKING
         if (attacking) {
             attacking();
         }
+        //COLLISION, AND EVENTS
         else if (keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed || keyH.enterPressed) { // Moving animation
             if (keyH.upPressed) {
                 direction = "up";
@@ -187,8 +194,8 @@ public class Player extends Entity {
             gp.keyH.enterPressed = false;
 
 
+            //ANIMATION
             spriteCounter++;
-
             if (spriteCounter > 18) {
                 if (spriteNum == 1) spriteNum = 2;
                 else spriteNum = 1;
@@ -197,10 +204,27 @@ public class Player extends Entity {
 
 
         }
-        //allows to player to get dmg just once each second and not once per frame
-        // giving him an invincibility time which last a second
 
 
+        //PLAYER PROJECTILE CHECKER
+        // (shoot 1 at a tile since we check if it's still alive or not and if has not passed 30 frames)
+        if(gp.keyH.shotKeyPressed && !projectile.alive && shotAvailableCounter == 30){
+
+            // SET DEFAULT COORDINATES, DIRECTION AND USER
+            projectile.set(worldX, worldY, direction, true, this);
+
+            // ADD IT TO THE LIST
+            gp.projectileList.add(projectile);
+
+            shotAvailableCounter = 0;
+
+            gp.playSE(10);
+
+        }
+
+        if(shotAvailableCounter < 30){
+            shotAvailableCounter++;
+        }
 
     }
 
@@ -234,7 +258,7 @@ public class Player extends Entity {
 
             // Check monster collusion with updated worldX worldY and solidArea
             int monsterIndex = gp.cChecker.checkEntity(this,gp.monster);
-            demageMonster(monsterIndex);
+            damageMonster(monsterIndex, attack);
 
             worldX = currentWorldX;
             worldY = currentWorldY;
@@ -278,7 +302,7 @@ public class Player extends Entity {
 
     public void contactMonster(int i) {
         if (i != 999) {
-            if (!invincible) {
+            if (!invincible && !gp.monster[i].dying) {
                 gp.playSE(6);
 
                 int damage = gp.monster[i].attack - defense;
@@ -291,7 +315,7 @@ public class Player extends Entity {
         }
     }
 
-    public void demageMonster(int i) {
+    public void damageMonster(int i, int attack) {
         if (i != 999) {
             if(!gp.monster[i].invincible) {
                 gp.playSE(5);
@@ -326,7 +350,7 @@ public class Player extends Entity {
     public void checkLevelUp(){
         if(exp >= nextLevelExp){
             level++;
-            nextLevelExp = nextLevelExp*2;
+            nextLevelExp = nextLevelExp * 2;
             maxLife += 2;
             strength++;
             dexterity++;
@@ -408,7 +432,7 @@ public class Player extends Entity {
         }
 
         //Invincible visual effects
-        if (invincible == true) {
+        if (invincible) {
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
         }
 
