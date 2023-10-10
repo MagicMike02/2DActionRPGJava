@@ -2,6 +2,7 @@ package monster;
 
 import entity.Entity;
 import main.GamePanel;
+import object.OBJ_Rock;
 
 import java.util.Random;
 
@@ -18,6 +19,7 @@ public class MON_GreenSlime extends Entity {
         attack = 5;
         defense = 0;
         exp = 2;
+        projectile = new OBJ_Rock(gp);
 
         solidArea.x = 3;
         solidArea.y = 10;
@@ -59,8 +61,15 @@ public class MON_GreenSlime extends Entity {
             if(i > 75 && i <= 100){
                 direction = "left";
             }
-
             actionLockCounter = 0;
+        }
+
+        //since update is called 60 time per sec, we try to make a random generation to get a change to shoot
+        int i = new Random().nextInt(100)+1;
+        if(i > 99 && !projectile.alive && shotAvailableCounter == 30){
+            projectile.set(worldX, worldY, direction, true, this);
+            gp.projectileList.add(projectile);
+            shotAvailableCounter = 0;
         }
 
 

@@ -2,10 +2,7 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
-import object.OBJ_Fireball;
-import object.OBJ_Key;
-import object.OBJ_Shield_Wood;
-import object.OBJ_Sword_Normal;
+import object.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -56,14 +53,21 @@ public class Player extends Entity {
         level = 1;
         maxLife = 6; // 3 full heart: 1 = half Heart; 2 = 1 full heart ....
         life = maxLife;
+        maxMana = 4;
+        mana = maxMana;
+        //ammo = 10;
         strength = 1; // the more strength the more dmg gives
         dexterity = 1; // the more dexterity the less dmg receives
         exp = 0;
         nextLevelExp = 5;
         coin = 0;
+
+        // WEAPON
         currentWeapon = new OBJ_Sword_Normal(gp);
         currentShield = new OBJ_Shield_Wood(gp);
         projectile = new OBJ_Fireball(gp);
+        //projectile = new OBJ_Rock(gp);
+
         attack = getAttack(); //total attack value is decided by strength and weapon
         defense = getDefense(); // total defense value is decided by dexterity and shield
     }
@@ -207,11 +211,14 @@ public class Player extends Entity {
 
 
         //PLAYER PROJECTILE CHECKER
-        // (shoot 1 at a tile since we check if it's still alive or not and if has not passed 30 frames)
-        if(gp.keyH.shotKeyPressed && !projectile.alive && shotAvailableCounter == 30){
+        // (shoot 1 at a tile since we check if it's still alive or not, and if it has not passed 30 frames and if it has resource for it)
+        if(gp.keyH.shotKeyPressed && !projectile.alive && shotAvailableCounter == 30 && projectile.haveResource(this)){
 
             // SET DEFAULT COORDINATES, DIRECTION AND USER
             projectile.set(worldX, worldY, direction, true, this);
+
+            // SUBTRACT THE COST (MANA, AMMO,...)
+            projectile.subtractResource(this);
 
             // ADD IT TO THE LIST
             gp.projectileList.add(projectile);

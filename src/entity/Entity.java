@@ -52,6 +52,7 @@ public class Entity {
     public int life;
     public int maxMana;
     public int mana;
+    public int ammo;
     public int level;
     public int strength;
     public  int dexterity;
@@ -121,18 +122,7 @@ public class Entity {
 
         //allows monster to deal dmg with THEY touch the player
         if(this.type == type_monster && contactPlayer) {
-            //check if player is in invincible state
-            if(!gp.player.invincible){
-                gp.playSE(6);
-
-                int damage = attack - gp.player.defense;
-                if (damage < 0){
-                    damage = 0;
-                }
-
-                gp.player.life -= damage;
-                gp.player.invincible = true;
-            }
+            damagePlayer(attack);
 
         }
 
@@ -162,6 +152,11 @@ public class Entity {
                 invincibilityCounter = 0;
             }
         }
+
+        //check a part of the condition which allows the entity to shoot each 30 frames
+        if(shotAvailableCounter < 30){
+            shotAvailableCounter++;
+        }
     }
 
     public void use(Entity entity){}
@@ -179,6 +174,21 @@ public class Entity {
             e.printStackTrace();
         }
         return image;
+    }
+
+    public void damagePlayer(int attack){
+        //check if player is in invincible state
+        if(!gp.player.invincible){
+            gp.playSE(6);
+
+            int damage = attack - gp.player.defense;
+            if (damage < 0){
+                damage = 0;
+            }
+
+            gp.player.life -= damage;
+            gp.player.invincible = true;
+        }
     }
 
     public void draw(Graphics2D g2) {
