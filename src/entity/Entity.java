@@ -55,7 +55,7 @@ public class Entity {
     public int ammo;
     public int level;
     public int strength;
-    public  int dexterity;
+    public int dexterity;
     public int attack;
     public int defense;
     public int exp;
@@ -67,6 +67,7 @@ public class Entity {
 
 
     // ITEM ATTRIBUTES
+    public int value;
     public int attackValue;
     public int defenseValue;
     public String description = "";
@@ -81,6 +82,7 @@ public class Entity {
     public final int type_axe = 4;
     public final int type_shield = 5;
     public final int type_consumable = 6;
+    public final int type_pickupOnly = 7;
 
 
     public Entity(GamePanel gp) {
@@ -90,9 +92,11 @@ public class Entity {
     public void setAction() {
 
     }
-    public void damageReaction(){
+
+    public void damageReaction() {
 
     }
+
     public void speak() {
         if (dialogues[dialogueIndex] == null) {
             dialogueIndex = 0;
@@ -105,6 +109,27 @@ public class Entity {
             case "down" -> direction = "up";
             case "right" -> direction = "left";
             case "left" -> direction = "right";
+        }
+    }
+
+    public void use(Entity entity) {
+    }
+
+    public void checkDrop() {
+
+    }
+
+    public void dropItem(Entity droppedItem) {
+        for (int i = 0; i < gp.obj.length; i++) {
+            if (gp.obj[i] == null) { // null valu ein the obj array and put the dropped item
+                gp.obj[i] = droppedItem;
+
+                //the dead monster coordinates
+                gp.obj[i].worldX = worldX;
+                gp.obj[i].worldY = worldY;
+                break; // IMPORTANT to not copy the same item in all the null value in the list
+
+            }
         }
     }
 
@@ -121,7 +146,7 @@ public class Entity {
         boolean contactPlayer = gp.cChecker.checkPlayer(this);
 
         //allows monster to deal dmg with THEY touch the player
-        if(this.type == type_monster && contactPlayer) {
+        if (this.type == type_monster && contactPlayer) {
             damagePlayer(attack);
 
         }
@@ -147,19 +172,17 @@ public class Entity {
         // giving him an invincibility time which last a some short time
         if (invincible == true) {
             invincibilityCounter++;
-            if (invincibilityCounter > gp.getFPS()-20) {
+            if (invincibilityCounter > gp.getFPS() - 20) {
                 invincible = false;
                 invincibilityCounter = 0;
             }
         }
 
         //check a part of the condition which allows the entity to shoot each 30 frames
-        if(shotAvailableCounter < 30){
+        if (shotAvailableCounter < 30) {
             shotAvailableCounter++;
         }
     }
-
-    public void use(Entity entity){}
 
 
     public BufferedImage setup(String imageName, int width, int height) {
@@ -176,13 +199,13 @@ public class Entity {
         return image;
     }
 
-    public void damagePlayer(int attack){
+    public void damagePlayer(int attack) {
         //check if player is in invincible state
-        if(!gp.player.invincible){
+        if (!gp.player.invincible) {
             gp.playSE(6);
 
             int damage = attack - gp.player.defense;
-            if (damage < 0){
+            if (damage < 0) {
                 damage = 0;
             }
 
@@ -202,76 +225,69 @@ public class Entity {
                 worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
                 worldY - gp.tileSize < gp.player.worldY + gp.player.screenY) {
 
-            switch (direction) {
-                case "up":
-                    image = spriteNum == 1 ? up1 : up2;
-                    break;
-                case "down":
-                    image = spriteNum == 1 ? down1 : down2;
-                    break;
-                case "left":
-                    image = spriteNum == 1 ? left1 : left2;
-                    break;
-                case "right":
-                    image = spriteNum == 1 ? right1 : right2;
-                    break;
-            }
+            image = switch (direction) {
+                case "up" -> spriteNum == 1 ? up1 : up2;
+                case "down" -> spriteNum == 1 ? down1 : down2;
+                case "left" -> spriteNum == 1 ? left1 : left2;
+                case "right" -> spriteNum == 1 ? right1 : right2;
+                default -> image;
+            };
 
 
             //Monster HealthBar
-            if(type == 2 && hpBarOn) {
-                double oneScale = (double) gp.tileSize/maxLife; // scale the hpbar based on the enemie width (for slimes is 1 tile)
-                double hpBarValue = oneScale*life;
+            if (type == 2 && hpBarOn) {
+                double oneScale = (double) gp.tileSize / maxLife; // scale the hpbar based on the enemie width (for slimes is 1 tile)
+                double hpBarValue = oneScale * life;
 
-                g2.setColor(new Color (35,35,35));
-                g2.fillRect(screenX-1, screenY-16, gp.tileSize+2, 12); // Border HealthBar
+                g2.setColor(new Color(35, 35, 35));
+                g2.fillRect(screenX - 1, screenY - 16, gp.tileSize + 2, 12); // Border HealthBar
 
                 g2.setColor(new Color(255, 0, 30));
-                g2.fillRect(screenX, screenY-15, (int)hpBarValue, 10); // screenY-15 to display it up the monster
+                g2.fillRect(screenX, screenY - 15, (int) hpBarValue, 10); // screenY-15 to display it up the monster
 
                 hpBarCounter++;
 
                 //show counter for 10 seconds
-                if(hpBarCounter > 600){
+                if (hpBarCounter > 600) {
                     hpBarCounter = 0;
                     hpBarOn = false;
                 }
             }
 
-            if (invincible == true) {
+            if (invincible) {
                 hpBarOn = true;
                 hpBarCounter = 0; // if player attack refresh counter
                 changeAlpha(g2, 0.4F);
             }
 
-            if(dying){
+            if (dying) {
                 dyingAnimation(g2);
             }
 
-            g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+            g2.drawImage(image, screenX, screenY, null);
 
             changeAlpha(g2, 1F);
 
         }
     }
 
-    public void dyingAnimation(Graphics2D g2){
+    public void dyingAnimation(Graphics2D g2) {
         dyingCounter++;
 
         int frequency = 5;
-        if(dyingCounter <= frequency) changeAlpha(g2, 1f);
-        if(dyingCounter > frequency*2 && dyingCounter <= frequency*3) changeAlpha(g2, 0f);
-        if(dyingCounter > frequency*3 && dyingCounter <= frequency*4) changeAlpha(g2, 1f);
-        if(dyingCounter > frequency*4 && dyingCounter <= frequency*5) changeAlpha(g2, 0f);
-        if(dyingCounter > frequency*5 && dyingCounter <= frequency*6) changeAlpha(g2, 1f);
-        if(dyingCounter > frequency*6 && dyingCounter <= frequency*7) changeAlpha(g2, 0f);
-        if(dyingCounter > frequency*7 && dyingCounter <= frequency*8) changeAlpha(g2, 1f);
-        if(dyingCounter > frequency*8){
+        if (dyingCounter <= frequency) changeAlpha(g2, 1f);
+        if (dyingCounter > frequency * 2 && dyingCounter <= frequency * 3) changeAlpha(g2, 0f);
+        if (dyingCounter > frequency * 3 && dyingCounter <= frequency * 4) changeAlpha(g2, 1f);
+        if (dyingCounter > frequency * 4 && dyingCounter <= frequency * 5) changeAlpha(g2, 0f);
+        if (dyingCounter > frequency * 5 && dyingCounter <= frequency * 6) changeAlpha(g2, 1f);
+        if (dyingCounter > frequency * 6 && dyingCounter <= frequency * 7) changeAlpha(g2, 0f);
+        if (dyingCounter > frequency * 7 && dyingCounter <= frequency * 8) changeAlpha(g2, 1f);
+        if (dyingCounter > frequency * 8) {
             alive = false;
         }
     }
 
-    public void changeAlpha(Graphics2D g2, float alphaValue){
+    public void changeAlpha(Graphics2D g2, float alphaValue) {
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alphaValue));
     }
 

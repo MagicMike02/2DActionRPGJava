@@ -43,7 +43,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     //ENTITY AND OBJECTS
     public Player player = new Player(this, keyH);
-    public Entity[] obj = new Entity[10]; // 10 slots for objects -> can display up to 10 object in the same time
+    public Entity[] obj = new Entity[20]; // 10 slots for objects -> can display up to 10 object in the same time
     public Entity[] npc = new Entity[10];
     public Entity[] monster = new Entity[20];
 
@@ -138,6 +138,7 @@ public class GamePanel extends JPanel implements Runnable {
                         monster[i].update();
                     }
                     if (!monster[i].alive) {
+                        monster[i].checkDrop();
                         monster[i] = null;
                     }
                 }
