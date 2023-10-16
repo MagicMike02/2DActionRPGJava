@@ -50,6 +50,7 @@ public class GamePanel extends JPanel implements Runnable {
     public InteractiveTile[] iTile = new InteractiveTile[50];
 
     public ArrayList<Entity> projectileList = new ArrayList<>();
+    public ArrayList<Entity> particleList = new ArrayList<>();
     public ArrayList<Entity> entityList = new ArrayList<>();
 
     //GAME SETTIGNS
@@ -158,6 +159,18 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
+            //PARTICLE
+            for (int i = 0; i < particleList.size(); i++) {
+                if (particleList.get(i) != null) {
+                    if (particleList.get(i).alive) {
+                        particleList.get(i).update();
+                    }
+                    if (!particleList.get(i).alive) {
+                        particleList.remove(i);
+                    }
+                }
+            }
+
             //INTERACTIVE TILES
             for (int i = 0; i < iTile.length; i++) {
                 if (iTile[i] != null) {
@@ -227,6 +240,11 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
+            for (Entity entity : particleList) {
+                if (entity != null) {
+                    entityList.add(entity);
+                }
+            }
 
             //SORT the list
             entityList.sort(Comparator.comparingInt(e -> e.worldY));
