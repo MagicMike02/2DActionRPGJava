@@ -28,6 +28,7 @@ public class GamePanel extends JPanel implements Runnable {
     int screenHeight2 = screenHeight;
     BufferedImage tempScreen;
     Graphics2D g2;
+    public boolean fullScreenOn = true;
 
     private static final long ONE_SEC_IN_NANOSEC = 1000000000;
 
@@ -70,6 +71,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int pauseState = 2;
     public final int dialogueState = 3;
     public final int characterState = 4;
+    public final int optionState = 5;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -321,6 +323,7 @@ public class GamePanel extends JPanel implements Runnable {
 
 
     //Draw components directly into the jpanel of this class
+    /*
     public void paintComponent(Graphics g) {
 
         super.paintComponent(g);
@@ -426,7 +429,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         g2.dispose();
     }
-
+*/
     public void playMusic(int i) {
         music.setFile(i);
         music.play();
