@@ -56,12 +56,6 @@ public class UI {
 
     }
 
-
-    public void addMessage(String text){
-        message.add(text);
-        messageCounter.add(0);
-    }
-
     public void draw(Graphics2D g2) {
         this.g2 = g2;
 
@@ -104,6 +98,18 @@ public class UI {
         if (gp.gameState == gp.optionState) {
             drawOptionsScreen();
         }
+
+        //GAME OVER STATE
+        if (gp.gameState == gp.gameOverState) {
+            drawGameOverScreen();
+        }
+    }
+
+
+
+    public void addMessage(String text){
+        message.add(text);
+        messageCounter.add(0);
     }
 
     public void drawPlayerLife() {
@@ -286,6 +292,49 @@ public class UI {
 */
     }
 
+    private void drawGameOverScreen() {
+        g2.setColor(new Color(0,0,0,150));
+        g2.fillRect(0,0,gp.screenWidth, gp.screenHeight);
+
+        int x;
+        int y;
+        String text;
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 110F));
+
+        //SHADOW
+        text = "Game Over";
+        g2.setColor(Color.black);
+        x = getXForCenteredText(text);
+        y = gp.tileSize * 4;
+        g2.drawString(text,x, y);
+
+        //MAIN TEXT
+        g2.setColor(Color.white);
+        g2.drawString(text,x-4,y-4);
+
+        //RETRY
+        g2.setFont(g2.getFont().deriveFont(50f));
+        text = "Retry";
+        x = getXForCenteredText(text);
+        y = y +gp.tileSize * 4;
+        g2.drawString(text, x, y);
+        if(commandNumber == 0){
+            g2.drawString(">", x-40, y);
+        }
+
+
+
+        //BACK to the Tile Screen
+        text = "Quit";
+        x = getXForCenteredText(text);
+        y = y + 55;
+        g2.drawString(text, x, y);
+        if(commandNumber == 1){
+            g2.drawString(">", x-40, y);
+        }
+
+    }
+
     public void drawPauseScreen() {
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 80F));
         String text = "PAUSED";
@@ -436,6 +485,7 @@ public class UI {
 
     }
 
+
     public void drawInventory(){
 
         //FRAME
@@ -527,8 +577,6 @@ public class UI {
         }
         gp.keyH.enterPressed = false;
     }
-
-
 
     public void option_top(int frameX, int frameY){
         int textX;

@@ -44,6 +44,10 @@ public class KeyHandler implements KeyListener {
         else if (gp.gameState == gp.optionState) {
             optionState(code);
         }
+        //GAME OVER STATE
+        else if (gp.gameState == gp.gameOverState) {
+            gameOverState(code);
+        }
 
     }
 
@@ -149,6 +153,12 @@ public class KeyHandler implements KeyListener {
         //DEBUG
         if (code == KeyEvent.VK_T) {
             showDebugText = !showDebugText;
+        }
+        if(code == KeyEvent.VK_R) {
+            switch (gp.currentMap){
+                case 0 -> gp.tileM.loadMap("Map/worldV3.txt", 0);
+                case 1 -> gp.tileM.loadMap("Map/interior01.txt", 1);
+            }
         }
 //        if (code == KeyEvent.VK_R){
 //            gp.tileM.loadMap("Map/worldV2.txt");
@@ -262,6 +272,34 @@ public class KeyHandler implements KeyListener {
             }
         }
 
+    }
+
+    public void gameOverState(int code){
+        if(code == KeyEvent.VK_W){
+            gp.ui.commandNumber--;
+            if(gp.ui.commandNumber < 0){
+                gp.ui.commandNumber = 1;
+            }
+            gp.playSE(9);
+        }
+        if(code == KeyEvent.VK_S){
+            gp.ui.commandNumber++;
+            if(gp.ui.commandNumber > 1){
+                gp.ui.commandNumber = 0;
+            }
+            gp.playSE(9);
+        }
+        if(code == KeyEvent.VK_ENTER){
+            if(gp.ui.commandNumber == 0){
+                gp.gameState = gp.playState;
+                gp.retry();
+                gp.playMusic(0);
+            }
+            else if(gp.ui.commandNumber == 1){
+                gp.gameState = gp.titleState;
+                gp.restart();
+            }
+        }
     }
 
     @Override

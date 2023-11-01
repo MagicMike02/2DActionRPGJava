@@ -120,13 +120,13 @@ public class Entity {
     }
 
     public void dropItem(Entity droppedItem) {
-        for (int i = 0; i < gp.obj.length; i++) {
-            if (gp.obj[i] == null) { // null value in the obj array and put the dropped item
-                gp.obj[i] = droppedItem;
+        for (int i = 0; i < gp.obj[1].length; i++) {
+            if (gp.obj[gp.currentMap][i] == null) { // null value in the obj array and put the dropped item
+                gp.obj[gp.currentMap][i] = droppedItem;
 
                 //the dead monster coordinates
-                gp.obj[i].worldX = worldX;
-                gp.obj[i].worldY = worldY;
+                gp.obj[gp.currentMap][i].worldX = worldX;
+                gp.obj[gp.currentMap][i].worldY = worldY;
                 break; // IMPORTANT to not copy the same item in all the null value in the list
 
             }
