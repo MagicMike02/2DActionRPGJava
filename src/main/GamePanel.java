@@ -7,6 +7,7 @@ import tiles.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -16,16 +17,25 @@ public class GamePanel extends JPanel implements Runnable {
     final int originalTileSizes = 16; //16x16 pixels
     final int scale = 3; // scale the pixels in bigger resolution
     public final int tileSize = originalTileSizes * scale; //48*48 tiles
-    public final int maxScreenCol = 16;
+    public final int maxScreenCol = 20;
     public final int maxScreenRow = 12;
+
     public final int screenWidth = tileSize * maxScreenCol; //768 pixels
     public final int screenHeight = tileSize * maxScreenRow; //576 pixels
+
+    //FULL SCREEN
+    int screenWidth2 = screenWidth;
+    int screenHeight2 = screenHeight;
+    BufferedImage tempScreen;
+    Graphics2D g2;
 
     private static final long ONE_SEC_IN_NANOSEC = 1000000000;
 
     //WORLD SETTINGS
     public final int maxWorldCol = 50;
     public final int maxWorldRow = 50;
+
+
     public Entity projectiles;
 
     int FPS = 60;
@@ -77,6 +87,23 @@ public class GamePanel extends JPanel implements Runnable {
         aSetter.setInteractiveTiles();
 //      playMusic(0); //index of background music BlueBoyAdventure
         gameState = titleState;
+
+        tempScreen = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB);
+        g2 = (Graphics2D) tempScreen.getGraphics();
+
+        setFullScreen();
+    }
+
+    public void setFullScreen(){
+        //GET LOCAL SCREEN DEVIDE
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice gd = ge.getDefaultScreenDevice();
+        gd.setFullScreenWindow(Main.window);
+
+        //GET FULL SCREEN WIDTH AND HEIGHT
+        screenWidth2 = Main.window.getWidth();
+        screenHeight2 = Main.window.getHeight();
+
     }
 
     public void startGameThread() {
@@ -107,8 +134,10 @@ public class GamePanel extends JPanel implements Runnable {
                 //UPDATE: update information such as character position
                 this.update();
                 //DRAW: draw the screen with the uploaded information
-                repaint(); // call paintComponent method
 
+                //repaint(); // call paintComponent method
+                drawToTempScreen(); // draw the component in the buffered image
+                drawToScreen(); // draw the buffered image to the screen
                 delta--;
                 drawCount++;
             }
@@ -186,6 +215,112 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
 
+    public void drawToTempScreen(){
+        //DEBUG
+        long drawStart = 0;
+        if (keyH.showDebugText) {
+            drawStart = System.nanoTime();
+        }
+
+        //TITLE SCREEN
+        if (gameState == titleState) {
+            ui.draw(g2);
+        }
+        //OTHERS
+        else {
+            //TILE
+            tileM.draw(g2);
+
+            for (int i = 0; i < iTile.length; i++) {
+                if (iTile[i] != null) {
+                    iTile[i].draw(g2);
+                }
+            }
+
+            //add entities to the list
+            entityList.add(player);
+
+            for (Entity entity : npc) {
+                if (entity != null) {
+                    entityList.add(entity);
+                }
+            }
+
+            for (Entity entity : obj) {
+                if (entity != null) {
+                    entityList.add(entity);
+                }
+            }
+
+            for (Entity entity : monster) {
+                if (entity != null) {
+                    entityList.add(entity);
+                }
+            }
+
+            for (Entity entity : projectileList) {
+                if (entity != null) {
+                    entityList.add(entity);
+                }
+            }
+
+            for (Entity entity : particleList) {
+                if (entity != null) {
+                    entityList.add(entity);
+                }
+            }
+
+            //SORT the list
+            entityList.sort(Comparator.comparingInt(e -> e.worldY));
+
+            //Draw Entities in the sorted order
+            for (Entity entity : entityList) {
+                entity.draw(g2);
+            }
+
+            //Empty Entity list
+            entityList.clear();
+
+            //UI
+            ui.draw(g2);
+        }
+
+        //DEBUG
+        if (keyH.showDebugText) {
+                long drawEnd = System.nanoTime();
+                long passed = drawEnd - drawStart;
+
+                g2.setFont(new Font("Arial", Font.PLAIN, 20));
+                g2.setColor(Color.WHITE);
+                int x = 10;
+                int y = 400;
+                int lineHeight = 20;
+
+
+                g2.drawString("WorldX " + player.worldX,x,y);
+                y += lineHeight;
+                g2.drawString("WorldY " + player.worldY, x, y);
+                y += lineHeight;
+
+                g2.drawString("Col " + (player.worldX + player.solidArea.x)/tileSize, x, y);
+                y += lineHeight;
+
+                g2.drawString("Row " + (player.worldY + player.solidArea.y)/tileSize, x, y);
+                y += lineHeight;
+
+                g2.drawString("DrawT Time : " + passed, x, y);
+
+            }
+    }
+
+    public void drawToScreen(){
+        Graphics g = getGraphics();
+        g.drawImage(tempScreen, 0, 0, screenWidth2, screenHeight2, null);
+        g.dispose();
+    }
+
+
+    //Draw components directly into the jpanel of this class
     public void paintComponent(Graphics g) {
 
         super.paintComponent(g);
