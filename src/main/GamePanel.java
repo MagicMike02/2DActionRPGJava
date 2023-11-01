@@ -78,6 +78,8 @@ public class GamePanel extends JPanel implements Runnable {
     public final int gameOverState = 6;
     public final int transitionState = 7;
 
+    public final int tradeState = 8;
+
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.black);
