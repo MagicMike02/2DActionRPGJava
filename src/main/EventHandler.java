@@ -7,6 +7,7 @@ public class EventHandler {
     //Make an event be triggered again, after the player moves at least 1 tile away
     int previousEventX, previousEventY;
     boolean canTouchEvent = true;
+    int tempMap, tempCol, tempRow;
 
     public EventHandler(GamePanel gp) {
         this.gp = gp;
@@ -54,10 +55,7 @@ public class EventHandler {
         if(canTouchEvent){
             if(hit(0, 27, 16, "right")) damagePit(gp.dialogueState);
             else if(hit(0, 23, 19, "any")) damagePit(gp.dialogueState);
-
-            else if(hit(0, 26, 17, "down")) teleport(gp.dialogueState);
             else if(hit(0, 23, 12, "up")) healthPool(gp.dialogueState);
-
             else if(hit(0, 10, 39, "any")) teleport(1,12,13);
             else if(hit(1,12,13, "any")) teleport(0, 10, 39);
 
@@ -99,22 +97,15 @@ public class EventHandler {
         return hit;
     }
 
-    public void teleport(int gameState){
-        gp.gameState = gameState;
-        gp.ui.currentDialogue = "Teleport!";
-        gp.player.worldX = gp.tileSize * 37;
-        gp.player.worldY = gp.tileSize * 9;
-    }
 
     public void teleport (int map, int col, int row) {
-        gp.currentMap = map;
-        gp.player.worldX = gp.tileSize * col;
-        gp.player.worldY = gp.tileSize * row;
 
-        //next event won't hit if player doesn't move first a tile away
-        previousEventX = gp.player.worldX;
-        previousEventY = gp.player.worldY;
+        gp.gameState = gp.transitionState;
+        tempMap = map;
+        tempCol = col;
+        tempRow = row;
         canTouchEvent = false;
+
         gp.playSE(13);
     }
 

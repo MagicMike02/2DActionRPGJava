@@ -31,6 +31,7 @@ public class UI {
     public int slotRow = 0;
 
     int subState = 0;
+    int counter;
 
     public UI(GamePanel gp) {
         this.gp = gp;
@@ -102,6 +103,10 @@ public class UI {
         //GAME OVER STATE
         if (gp.gameState == gp.gameOverState) {
             drawGameOverScreen();
+        }
+        //GAME OVER STATE
+        if (gp.gameState == gp.transitionState) {
+            drawTransition();
         }
     }
 
@@ -321,7 +326,6 @@ public class UI {
         if(commandNumber == 0){
             g2.drawString(">", x-40, y);
         }
-
 
 
         //BACK to the Tile Screen
@@ -774,6 +778,26 @@ public class UI {
                 subState = 0;
                 commandNumber = 4;
             }
+        }
+
+    }
+
+
+    public void drawTransition(){
+        counter++;
+        g2.setColor(new Color(0,0,0,counter*5));
+        g2.fillRect(0,0,gp.screenWidth, gp.screenHeight);
+
+        if(counter == 50) {
+            counter = 0;
+            gp.gameState = gp.playState;
+            gp.currentMap = gp.eHandler.tempMap;
+            gp.player.worldX = gp.tileSize * gp.eHandler.tempCol;
+            gp.player.worldY = gp.tileSize * gp.eHandler.tempRow;
+
+            //next event won't hit if player doesn't move first a tile away
+            gp.eHandler.previousEventX = gp.player.worldX;
+            gp.eHandler.previousEventY = gp.player.worldY;
         }
 
     }
